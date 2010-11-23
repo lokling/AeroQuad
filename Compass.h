@@ -26,12 +26,12 @@
 class Compass {
 public: 
   int compassAddress;
-  float heading, absoluteHeading, gyroStartHeading;
-  float compass;
-  float magMax[3];
-  float magMin[3];
-  float magScale[3];
-  float magOffset[3];
+  long heading, absoluteHeading, gyroStartHeading;
+  long compass;
+  long magMax[3];
+  long magMin[3];
+  long magScale[3];
+  long magOffset[3];
 
   Compass(void) { }
 
@@ -44,19 +44,19 @@ public:
   // *********************************************************
   // The following functions are common between all subclasses
   // *********************************************************
-  const float getData(void) {
+  const long getData(void) {
     return compass;
   }
   
-  const float getHeading(void) {
+  const long getHeading(void) {
     return heading;
   }
   
-  const float getAbsoluteHeading(void) {
+  const long getAbsoluteHeading(void) {
     return absoluteHeading;
   }
   
-  void setMagCal(byte axis, float maxValue, float minValue) {
+  void setMagCal(byte axis, long maxValue, long minValue) {
     magMax[axis] = maxValue;
     magMin[axis] = minValue;
     // Assume max/min is scaled to +1 and -1
@@ -68,11 +68,11 @@ public:
     magOffset[axis] = -(magScale[axis] * magMin[axis]) - 1;
   }
   
-  const float getMagMax(byte axis) {
+  const long getMagMax(byte axis) {
     return magMax[axis];
   }
   
-  const float getMagMin(byte axis) {
+  const long getMagMin(byte axis) {
     return magMin[axis];
   }
 };
@@ -83,18 +83,18 @@ public:
 class Compass_AeroQuad_v2 : public Compass {
 // This sets up the HMC5843 from Sparkfun
 private:
-  float cosRoll;
-  float sinRoll;
-  float cosPitch;
-  float sinPitch;
-  float magX;
-  float magY;
+  long cosRoll;
+  long sinRoll;
+  long cosPitch;
+  long sinPitch;
+  long magX;
+  long magY;
   int measuredMagX;
   int measuredMagY;
   int measuredMagZ;
-  float smoothFactor; // time constant for complementary filter
-  float filter1, filter2; // coefficients for complementary filter
-  float adjustedGyroHeading, previousHead;
+  long smoothFactor; // time constant for complementary filter
+  long filter1, filter2; // coefficients for complementary filter
+  long adjustedGyroHeading, previousHead;
   int gyroZero;
   
 public: 
@@ -140,8 +140,8 @@ public:
     sinRoll = sin(radians(flightAngle.getData(ROLL)));
     cosPitch = cos(radians(flightAngle.getData(PITCH)));
     sinPitch = sin(radians(flightAngle.getData(PITCH)));
-    magX = ((float)measuredMagX * magScale[XAXIS] + magOffset[XAXIS]) * cosPitch + ((float)measuredMagY * magScale[YAXIS] + magOffset[YAXIS]) * sinRoll * sinPitch + ((float)measuredMagZ * magScale[ZAXIS] + magOffset[ZAXIS]) * cosRoll * sinPitch;
-    magY = ((float)measuredMagY * magScale[YAXIS] + magOffset[YAXIS]) * cosRoll - ((float)measuredMagZ * magScale[ZAXIS] + magOffset[ZAXIS]) * sinRoll;
+    magX = ((long)measuredMagX * magScale[XAXIS] + magOffset[XAXIS]) * cosPitch + ((long)measuredMagY * magScale[YAXIS] + magOffset[YAXIS]) * sinRoll * sinPitch + ((long)measuredMagZ * magScale[ZAXIS] + magOffset[ZAXIS]) * cosRoll * sinPitch;
+    magY = ((long)measuredMagY * magScale[YAXIS] + magOffset[YAXIS]) * cosRoll - ((long)measuredMagZ * magScale[ZAXIS] + magOffset[ZAXIS]) * sinRoll;
     compass = -degrees(atan2(-magY, magX));
     //Serial.println(compass);
     

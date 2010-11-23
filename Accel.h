@@ -20,19 +20,19 @@
 
 class Accel {
 public:
-  float accelScaleFactor;
-  float smoothFactor;
-  float rawAltitude;
+  long accelScaleFactor;
+  long smoothFactor;
+  long rawAltitude;
   int accelChannel[3];
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-  float accelZero[3];
+  long accelZero[3];
   #else
   int accelZero[3];
   #endif
-  int accelData[3];
-  float accelADC[3];
+  long accelData[3];
+  long accelADC[3];
   int sign[3];
-  float accelOneG, zAxis;
+  long accelOneG, zAxis;
   byte rollChannel, pitchChannel, zAxisChannel;
   unsigned long currentTime, previousTime;
   Accel(void) {
@@ -51,7 +51,7 @@ public:
   }
   virtual void measure(void);
   virtual void calibrate(void);
-  virtual const int getFlightData(byte);
+  virtual const long getFlightData(byte);
 
   // **************************************************************
   // The following functions are common between all Gyro subclasses
@@ -67,57 +67,57 @@ public:
     accelOneG = readFloat(ACCEL1G_ADR);
   }
   
-  const int getRaw(byte axis) {
+  const long getRaw(byte axis) {
     return accelADC[axis] * sign[axis];
   }
   
-  const int getData(byte axis) {
+  const long getData(byte axis) {
     return accelData[axis] * sign[axis];
   }
   
-  const int invert(byte axis) {
+  const long invert(byte axis) {
     sign[axis] = -sign[axis];
     return sign[axis];
   }
   
-  const int getZero(byte axis) {
+  const long getZero(byte axis) {
     return accelZero[axis];
   }
   
-  void setZero(byte axis, int value) {
+  void setZero(byte axis, long value) {
     accelZero[axis] = value;
   }
   
-  const float getScaleFactor(void) {
+  const long getScaleFactor(void) {
     return accelScaleFactor;
   }
   
-  const float getSmoothFactor() {
+  const long getSmoothFactor() {
     return smoothFactor;
   }
   
-  void setSmoothFactor(float value) {
+  void setSmoothFactor(long value) {
     smoothFactor = value;
   }
   
-  const float angleRad(byte axis) {
+  const long angleRad(byte axis) {
     if (axis == PITCH) return arctan2(accelData[PITCH] * sign[PITCH], sqrt((long(accelData[ROLL]) * accelData[ROLL]) + (long(accelData[ZAXIS]) * accelData[ZAXIS])));
     if (axis == ROLL) return arctan2(accelData[ROLL] * sign[ROLL], sqrt((long(accelData[PITCH]) * accelData[PITCH]) + (long(accelData[ZAXIS]) * accelData[ZAXIS])));
   }
 
-  const float angleDeg(byte axis) {
+  const long angleDeg(byte axis) {
     return degrees(angleRad(axis));
   }
   
-  void setOneG(int value) {
+  void setOneG(long value) {
     accelOneG = value;
   }
   
-  const int getOneG(void) {
+  const long getOneG(void) {
     return accelOneG;
   }
   
-  const int getZaxis() {
+  const long getZaxis() {
     currentTime = micros();
     zAxis = smooth(getFlightData(ZAXIS), zAxis, 0.25, ((currentTime - previousTime) / 5000.0)); //expect 5ms = 5000Ã‚Âµs = (current-previous) / 5000.0 to get around 1
     previousTime = currentTime;
@@ -145,7 +145,7 @@ public:
   #endif
   #endif
   
-  const float getAltitude(void) {
+  const long getAltitude(void) {
     return rawAltitude;
   }
 };
@@ -473,22 +473,22 @@ public:
       accelADC[YAXIS] = chr6dm.data.ay - accelZero[YAXIS];
       accelADC[ZAXIS] = chr6dm.data.az - accelOneG;
 
-      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0)); //to get around 1
-      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000)); //to get around 1
+      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000));
+      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000));
     previousTime = currentTime;
   }    
 
-  const int getFlightData(byte axis) {
+  const long getFlightData(byte axis) {
     return getRaw(axis);
   }
 
   // Allows user to zero accelerometers on command
   void calibrate(void) {
 
-   float zeroXreads[FINDZERO];
-   float zeroYreads[FINDZERO];
-   float zeroZreads[FINDZERO];
+   long zeroXreads[FINDZERO];
+   long zeroYreads[FINDZERO];
+   long zeroZreads[FINDZERO];
 
 
     for (int i=0; i<FINDZERO; i++) {
@@ -548,22 +548,22 @@ public:
       accelADC[YAXIS] = fakeAccelPitch - accelZero[YAXIS];
       accelADC[ZAXIS] = fakeAccelYaw - accelOneG;
 
-      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000));
+      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000));
+      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000));
     previousTime = currentTime;
   }
   
-  const int getFlightData(byte axis) {
+  const long getFlightData(byte axis) {
     return getRaw(axis);
   }
 
   // Allows user to zero accelerometers on command
   void calibrate(void) {
 
-   float zeroXreads[FINDZERO];
-   float zeroYreads[FINDZERO];
-   float zeroZreads[FINDZERO];
+   long zeroXreads[FINDZERO];
+   long zeroYreads[FINDZERO];
+   long zeroZreads[FINDZERO];
 
 
     for (int i=0; i<FINDZERO; i++) {

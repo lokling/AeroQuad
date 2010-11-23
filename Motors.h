@@ -31,15 +31,15 @@ public:
   int motorCommand[8];
   int minCommand[8];
   int maxCommand[8];
-  float throttle;
-  float timerDebug;
+  long throttle;
+  long timerDebug;
   int motor;
   int delta;
   byte axis;
   // Ground station control
   int remoteCommand[8];
-  float mMotorCommand;
-  float bMotorCommand;
+  long mMotorCommand;
+  long bMotorCommand;
 
 
   Motors(void){
@@ -86,11 +86,11 @@ public:
     return remoteCommand[motor];
   }
   
-  const float getMotorSlope(void) {
+  const long getMotorSlope(void) {
     return mMotorCommand;
   }
   
-  const float getMotorOffset(void) {
+  const long getMotorOffset(void) {
     return bMotorCommand;
   }
     
@@ -125,10 +125,10 @@ public:
   const int getMotorCommand(byte motor) {
     return motorCommand[motor];
   }
-  void setThrottle(float value) {
+  void setThrottle(long value) {
     throttle = value;
   }
-  const float getThrottle() {
+  const long getThrottle() {
     return throttle;
   }
 };
@@ -345,13 +345,13 @@ public:
 
 
 /* Mixertable VAR */
-  float MotorGas[LASTMOTOR];
-  float MotorPitch[LASTMOTOR];
-  float MotorRoll[LASTMOTOR];
-  float MotorYaw[LASTMOTOR];
-  float motorAxisCommandPitch[LASTMOTOR];
-  float motorAxisCommandRoll[LASTMOTOR];
-  float motorAxisCommandYaw[LASTMOTOR];
+  long MotorGas[LASTMOTOR];
+  long MotorPitch[LASTMOTOR];
+  long MotorRoll[LASTMOTOR];
+  long MotorYaw[LASTMOTOR];
+  long motorAxisCommandPitch[LASTMOTOR];
+  long motorAxisCommandRoll[LASTMOTOR];
+  long motorAxisCommandYaw[LASTMOTOR];
   
   unsigned char MotorI2C[LASTMOTOR];	
   Motors_I2C() : Motors() {}
@@ -361,8 +361,8 @@ public:
   // Scale motor commands to analogWrite		
   // m = (250-126)/(2000-1000) = 0.124		
   // b = y1 - (m * x1) = 126 - (0.124 * 1000) = 2		
-  //float mMotorCommand = 0.124;		
-  //float bMotorCommand = 2 ;
+  //long mMotorCommand = 0.124;
+  //long bMotorCommand = 2 ;
   
   mMotorCommand = 0.255;		
   bMotorCommand = -255;
@@ -488,7 +488,7 @@ for (i=0;i<LASTMOTOR;i++)
 void motor_matrix_command()
 {
 int i;
-float valuemotor;
+long valuemotor;
 for (i=0;i<LASTMOTOR;i++)
   {
    valuemotor = ((Throttle* MotorGas[i])/100) + motorAxisCommandPitch[i] + motorAxisCommandYaw[i] + motorAxisCommandRoll[i];

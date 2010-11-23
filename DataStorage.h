@@ -19,26 +19,26 @@
 */
 
 // Utilities for writing and reading from the EEPROM
-float readFloat(int address) {
-  union floatStore {
-    byte floatByte[4];
-    float floatVal;
-  } floatOut;
+long readFloat(int address) {
+  union longStore {
+    byte longByte[4];
+    long longVal;
+  } longOut;
   
   for (int i = 0; i < 4; i++) 
-    floatOut.floatByte[i] = EEPROM.read(address + i);
-  return floatOut.floatVal;
+    longOut.longByte[i] = EEPROM.read(address + i);
+  return longOut.longVal;
 }
 
-void writeFloat(float value, int address) {
-  union floatStore {
-    byte floatByte[4];
-    float floatVal;
-  } floatIn;
+void writeFloat(long value, int address) {
+  union longStore {
+    byte longByte[4];
+    long longVal;
+  } longIn;
   
-  floatIn.floatVal = value;
+  longIn.longVal = value;
   for (int i = 0; i < 4; i++) 
-    EEPROM.write(address + i, floatIn.floatByte[i]);
+    EEPROM.write(address + i, longIn.longByte[i]);
 }
 
 // contains all default values when re-writing EEPROM

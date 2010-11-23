@@ -19,14 +19,14 @@
 */
 
 // Low pass filter, kept as regular C function for speed
-float smooth(float currentData, float previousData, float smoothFactor, float dT_scaledAroundOne) {  //time scale factor
- if (smoothFactor != 1.0) { //only apply time compensated filter if smoothFactor is applied
-  return (previousData * (1.0 - (smoothFactor * dT_scaledAroundOne)) + (currentData * (smoothFactor * dT_scaledAroundOne))); 
+long smooth(long currentData, long previousData, long smoothFactor, long dT_scaledAroundOne) {  //time scale factor
+ //if (smoothFactor != 1) { //only apply time compensated filter if smoothFactor is applied
+ // return (previousData * (1 - (smoothFactor * dT_scaledAroundOne)) + (currentData * (smoothFactor * dT_scaledAroundOne)));
   //return (previousData * (1.0 - smoothFactor) + (currentData * smoothFactor)); 
- }
-    else {
+ //}
+ //   else {
        return currentData; //if smoothFactor == 1.0, do not calculate, just bypass!
-     }
+ //    }
 }
 
 
@@ -39,7 +39,7 @@ float smooth(float currentData, float previousData, float smoothFactor, float dT
 class MedianFilter {
 public: 
   #define DATASIZE 25
-  float data[DATASIZE], sortData[DATASIZE];
+  long data[DATASIZE], sortData[DATASIZE];
   int dataIndex;
   MedianFilter(void) {}
 
@@ -51,7 +51,7 @@ public:
     dataIndex = 0;
   }
   
-  const float filter(float newData) {
+  const long filter(long newData) {
     int temp, i, j; // used to sort array
 
     // Insert new data into raw data array round robin style

@@ -45,7 +45,7 @@ void printFloat(double number, int digits)
   }
 
   // Round correctly so that print(1.999, 2) prints as "2.00"
-  double rounding = 0.5;
+  long rounding = 0.5;
   for (uint8_t i=0; i<digits; ++i)
     rounding /= 10.0;
   
@@ -53,7 +53,7 @@ void printFloat(double number, int digits)
 
   // Extract the integer part of the number and print it
   unsigned long int_part = (unsigned long)number;
-  double remainder = number - (double)int_part;
+  long remainder = number - (double)int_part;
   Serial.print(int_part);
 
   // Print the decimal point, but only if there are digits beyond
@@ -73,7 +73,7 @@ void printFloat(double number, int digits)
 void gpsdump(TinyGPS &gps)
 {
   long lat, lon;
-  float flat, flon;
+  long flat, flon;
   unsigned long age, date, time, chars;
   int year;
   byte month, day, hour, minute, second, hundredths;
@@ -86,7 +86,7 @@ void gpsdump(TinyGPS &gps)
   feedgps(); // If we don't feed the gps during this long routine, we may drop characters and get checksum errors
 
   gps.f_get_position(&flat, &flon, &age);
-  Serial.print("Lat/Long(float): "); printFloat(flat, 5); Serial.print(", "); printFloat(flon, 5);
+  Serial.print("Lat/Long(long): "); printFloat(flat, 5); Serial.print(", "); printFloat(flon, 5);
   Serial.print(" Fix age: "); Serial.print(age); Serial.println("ms.");
 
   feedgps();
@@ -105,7 +105,7 @@ void gpsdump(TinyGPS &gps)
   feedgps();
 
   Serial.print("Alt(cm): "); Serial.print(gps.altitude()); Serial.print(" Course(10^-2 deg): "); Serial.print(gps.course()); Serial.print(" Speed(10^-2 knots): "); Serial.println(gps.speed());
-  Serial.print("Alt(float): "); printFloat(gps.f_altitude()); Serial.print(" Course(float): "); printFloat(gps.f_course()); Serial.println();
+  Serial.print("Alt(long): "); printFloat(gps.f_altitude()); Serial.print(" Course(long): "); printFloat(gps.f_course()); Serial.println();
   Serial.print("Speed(knots): "); printFloat(gps.f_speed_knots()); Serial.print(" (mph): ");  printFloat(gps.f_speed_mph());
   Serial.print(" (mps): "); printFloat(gps.f_speed_mps()); Serial.print(" (kmph): "); printFloat(gps.f_speed_kmph()); Serial.println();
 

@@ -122,11 +122,11 @@ void lowBatteryEvent(byte level) // <- this logic by Jose Julio
     }
 }
 
-float readBattery(void)
+long readBattery(void)
 {   
   byte batteryStatus = 0;
   
-  float batteryVoltage = (((analogRead(BATTERYPIN)*(AREF/1024.0)) * (R1+R2)) / R2) + DIODE_FWD_VOLTAGE_DROP; //max 13.5V! Honk gets 0.01V difference from this function compared to DMM
+  long batteryVoltage = (((analogRead(BATTERYPIN)*(AREF/1024.0)) * (R1+R2)) / R2) + DIODE_FWD_VOLTAGE_DROP; //max 13.5V! Honk gets 0.01V difference from this function compared to DMM
   //Serial.println(battery_voltage); //this is accessed by typing '=' in Serial Monitor
   
   if (batteryStatus==2)   // If we reach battery status 2, we mantain this status of alert

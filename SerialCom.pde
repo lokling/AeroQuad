@@ -551,8 +551,8 @@ void sendSerialTelemetry() {
   }
 }
 
-// Used to read floating point values from the serial port
-float readFloatSerial() {
+// Used to read longing point values from the serial port
+long readFloatSerial() {
   byte index = 0;
   byte timeout = 0;
   char data[128] = "";

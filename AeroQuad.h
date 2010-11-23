@@ -23,6 +23,8 @@
 #include "WProgram.h"
 #include "pins_arduino.h"
 
+int Q = 10000;
+
 // Flight Software Version
 #define VERSION 2.1
 
@@ -72,21 +74,21 @@
 #define ZDAMPENING 9
 
 #ifndef AeroQuad_v18
-float fakeGyroRoll;
-float fakeGyroPitch;
-float fakeGyroYaw;
+long fakeGyroRoll;
+long fakeGyroPitch;
+long fakeGyroYaw;
 
-float fakeAccelRoll;
-float fakeAccelPitch;
-float fakeAccelYaw;
+long fakeAccelRoll;
+long fakeAccelPitch;
+long fakeAccelYaw;
 #endif
 
 // PID Variables
 struct PIDdata {
-  float P, I, D;
-  float lastPosition;
-  float integratedError;
-  float windupGuard; // Thinking about having individual wind up guards for each PID
+  long P, I, D;
+  long lastPosition;
+  long integratedError;
+  long windupGuard; // Thinking about having individual wind up guards for each PID
 } PID[10];
 // This struct above declares the variable PID[] to hold each of the PID values for various functions
 // The following constants are declared in AeroQuad.h
@@ -95,13 +97,13 @@ struct PIDdata {
 // HEADING = 5 (used for heading hold)
 // ALTITUDE = 8 (used for altitude hold)
 // ZDAMPENING = 9 (used in altitude hold to dampen vertical accelerations)
-float windupGuard; // Read in from EEPROM
+long windupGuard; // Read in from EEPROM
 
 // Smoothing filter parameters
 #define GYRO 0
 #define ACCEL 1
 #define FINDZERO 50
-float smoothHeading;
+long smoothHeading;
 
 // Sensor pin assignments
 #define PITCHACCELPIN 0
@@ -140,7 +142,7 @@ byte motor;
 // If you don't have a DMM use the following:
 // AeroQuad Shield v1.7, aref = 3.0
 // AeroQuad Shield v1.6 or below, aref = 2.8
-float aref; // Read in from EEPROM
+long aref; // Read in from EEPROM
 int axis;
 
 // Flight Mode
@@ -154,24 +156,24 @@ int levelAdjust[2] = {0,0};
 int levelLimit; // Read in from EEPROM
 int levelOff; // Read in from EEPROM
 // Scale to convert 1000-2000 PWM to +/- 45 degrees
-float mLevelTransmitter = 0.09;
-float bLevelTransmitter = -135;
+long mLevelTransmitter = 0.09;
+long bLevelTransmitter = -135;
 
 #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-float CHR_RollAngle;
-float CHR_PitchAngle;
+long CHR_RollAngle;
+long CHR_PitchAngle;
 #endif
 
 
 // Heading hold
 byte headingHoldConfig;
-//float headingScaleFactor;
-float commandedYaw = 0;
-float headingHold = 0; // calculated adjustment for quad to go to heading (PID output)
-float heading = 0; // measured heading from yaw gyro (process variable)
-float relativeHeading = 0; // current heading the quad is set to (set point)
-float absoluteHeading = 0;;
-float setHeading = 0;
+//long headingScaleFactor;
+long commandedYaw = 0;
+long headingHold = 0; // calculated adjustment for quad to go to heading (PID output)
+long heading = 0; // measured heading from yaw gyro (process variable)
+long relativeHeading = 0; // current heading the quad is set to (set point)
+long absoluteHeading = 0;;
+long setHeading = 0;
 
 
 // Altitude Hold
@@ -183,9 +185,9 @@ int autoDescent = 0;
 #ifndef AeroQuad_v18
 int minThrottleAdjust = -50;
 int maxThrottleAdjust = 50;
-float holdAltitude = 0.0;
+long holdAltitude = 0.0;
 int holdThrottle = 1000;
-float zDampening = 0.0;
+long zDampening = 0.0;
 byte storeAltitude = OFF;
 byte altitudeHold = OFF;
 #endif
@@ -212,10 +214,10 @@ int delta;
 #define MAXOFFWIDTH 24000
 
 // Flight angle variables
-float timeConstant;
-/*float rateRadPerSec(byte axis);
-float rateDegPerSec(byte axis);
-float angleDeg(byte axis);
+long timeConstant;
+/*long rateRadPerSec(byte axis);
+long rateDegPerSec(byte axis);
+long angleDeg(byte axis);
 */
 
 // Camera stabilization variables
@@ -224,8 +226,8 @@ float angleDeg(byte axis);
   #define ROLLCAMERAPIN 8
   #define PITCHCAMERAPIN 13
   // map +/-90 degrees to 1000-2000
-  float mCamera = 5.556;
-  float bCamera = 1500;
+  long mCamera = 5.556;
+  long bCamera = 1500;
   Servo rollCamera;
   Servo pitchCamera;
 #endif
@@ -254,9 +256,9 @@ byte update = 0;
 #define ALTITUDELOOPTIME 26000 //26ms, 38Hz
 #define BATTERYLOOPTIME 100000 //100ms, 10Hz
 
-float AIdT = AILOOPTIME / 1000000.0; //was 1000.0 in V6, not used however
-float controldT = CONTROLLOOPTIME / 1000000.0; //was 1000.0 in V6, not used however
-float G_Dt = 0.002;
+long AIdT = AILOOPTIME / 1000000.0; //was 1000.0 in V6, not used however
+long controldT = CONTROLLOOPTIME / 1000000.0; //was 1000.0 in V6, not used however
+long G_Dt = 0.002;
 
 unsigned long previousTime = 0;
 unsigned long currentTime = 0;
@@ -380,9 +382,9 @@ byte testSignal = LOW;
 
 
 
-float arctan2(float y, float x); // defined in Sensors.pde
-float readFloat(int address); // defined in DataStorage.h
-void writeFloat(float value, int address); // defined in DataStorage.h
+long arctan2(long y, long x); // defined in Sensors.pde
+long readFloat(int address); // defined in DataStorage.h
+void writeFloat(long value, int address); // defined in DataStorage.h
 void readEEPROM(void); // defined in DataStorage.h
 void readPilotCommands(void); // defined in FlightCommand.pde
 void readSensors(void); // defined in Sensors.pde
@@ -390,11 +392,11 @@ void flightControl(void); // defined in FlightControl.pde
 void readSerialCommand(void);  //defined in SerialCom.pde
 void sendSerialTelemetry(void); // defined in SerialCom.pde
 void printInt(int data); // defined in SerialCom.pde
-float readFloatSerial(void); // defined in SerialCom.pde
+long readFloatSerial(void); // defined in SerialCom.pde
 void comma(void); // defined in SerialCom.pde
 
 #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-float findMode(float *data, int arraySize); // defined in Sensors.pde
+long findMode(long *data, int arraySize); // defined in Sensors.pde
 #else
 int findMode(int *data, int arraySize); // defined in Sensors.pde
 #endif

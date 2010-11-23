@@ -20,20 +20,20 @@
 
 class Gyro {
 public:
-  float gyroFullScaleOutput;
-  float gyroScaleFactor;
-  float smoothFactor;
+  long gyroFullScaleOutput;
+  long gyroScaleFactor;
+  long smoothFactor;
   int gyroChannel[3];
   int gyroData[3];
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-  float gyroZero[3];
+  long gyroZero[3];
   #else
   int gyroZero[3];
   #endif
-  float gyroADC[3];
+  long gyroADC[3];
   byte rollChannel, pitchChannel, yawChannel;
   int sign[3];
-  float rawHeading, gyroHeading;
+  long rawHeading, gyroHeading;
   unsigned long currentTime, previousTime;
   unsigned long headingCurrentTime, headingPreviousTime;
   
@@ -98,23 +98,23 @@ public:
     gyroZero[axis] = value;
   }    
   
-  const float getScaleFactor() {
+  const long getScaleFactor() {
     return gyroScaleFactor;
   }
 
-  const float getSmoothFactor(void) {
+  const long getSmoothFactor(void) {
     return smoothFactor;
   }
   
-  void setSmoothFactor(float value) {
+  void setSmoothFactor(long value) {
     smoothFactor = value;
   }
 
-  const float rateDegPerSec(byte axis) {
+  const long rateDegPerSec(byte axis) {
     return ((gyroADC[axis] * sign[axis]) / 1024.0) * gyroScaleFactor;
   }
 
-  const float rateRadPerSec(byte axis) {
+  const long rateRadPerSec(byte axis) {
     return radians(((gyroADC[axis] * sign[axis]) / 1024.0) * gyroScaleFactor);
   }
   
@@ -125,7 +125,7 @@ public:
   }
  
   // returns heading as +/- 180 degrees
-  const float getHeading(void) {
+  const long getHeading(void) {
     div_t integerDivide;
     
     integerDivide = div(rawHeading, 360);
@@ -135,11 +135,11 @@ public:
     return gyroHeading;
   }
   
-  const float getRawHeading(void) {
+  const long getRawHeading(void) {
     return rawHeading;
   }
   
-  void setStartHeading(float value) {
+  void setStartHeading(long value) {
     // since a relative heading, get starting absolute heading from compass class
     rawHeading = value;
   }
@@ -495,9 +495,9 @@ public:
 
   void calibrate() {
 
-    float zeroXreads[FINDZERO];
-    float zeroYreads[FINDZERO];
-    float zeroZreads[FINDZERO];
+    long zeroXreads[FINDZERO];
+    long zeroYreads[FINDZERO];
+    long zeroZreads[FINDZERO];
 
     for (int i=0; i<FINDZERO; i++) {
         readCHR6DM();
@@ -557,9 +557,9 @@ previousTime = currentTime;
 
   void calibrate() {
 
-    float zeroXreads[FINDZERO];
-    float zeroYreads[FINDZERO];
-    float zeroZreads[FINDZERO];
+    long zeroXreads[FINDZERO];
+    long zeroYreads[FINDZERO];
+    long zeroZreads[FINDZERO];
 
     for (int i=0; i<FINDZERO; i++) {
         readFakeValues();

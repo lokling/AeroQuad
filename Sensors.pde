@@ -53,11 +53,11 @@ void readSensors(void) {
 }
 
 // Alternate method to calculate arctangent from: http://www.dspguru.com/comp.dsp/tricks/alg/fxdatan2.htm
-float arctan2(float y, float x) {
-  float coeff_1 = PI/4;
-  float coeff_2 = 3*coeff_1;
-  float abs_y = abs(y)+1e-10;      // kludge to prevent 0/0 condition
-  float r, angle;
+long arctan2(long y, long x) {
+  long coeff_1 = PI/4;
+  long coeff_2 = 3*coeff_1;
+  long abs_y = abs(y)+1e-10;      // kludge to prevent 0/0 condition
+  long r, angle;
    
   if (x >= 0) {
     r = (x - abs_y) / (x + abs_y);
@@ -76,8 +76,8 @@ float arctan2(float y, float x) {
 // Used for sensor calibration
 // Takes the median of 50 results as zero
 #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-float findMode(float *data, int arraySize) {
-  float temp;
+long findMode(long *data, int arraySize) {
+  long temp;
 #else
 int findMode(int *data, int arraySize) {                  //Thanks ala42! Post: http://aeroquad.com/showthread.php?1369-The-big-enhancement-addition-to-2.0-code/page5
   int temp;
@@ -103,7 +103,7 @@ int findMode(int *data, int arraySize) {                  //Thanks ala42! Post: 
 
 /******************START OF SHARP IR READING*************/
 #ifdef IRdistance
-float readFilteredSHARP () {
+long readFilteredSHARP () {
 #define PROXSENSPIN 0 
 #define VOLTS_PER_UNIT .00319336F  // (.0049 for 10 bit A-D) //but AREF = 3.27
 unsigned long IRcurrentTime; 
@@ -111,16 +111,16 @@ unsigned long IRpreviousTime = 50000; //init to not cause jump
 
   IRcurrentTime = micros();
 
-float proxSens = analogRead(PROXSENSPIN);  
+long proxSens = analogRead(PROXSENSPIN);
   
-  float voltage = (float)proxSens * VOLTS_PER_UNIT; // ("proxSens" is from analog read)
-  //float inches = 23.897 * pow(voltage,-1.1907); //calc inches using "power" trend line from Excel
-  float rawDist = 60.495 * pow(voltage,-1.1904);     // same in cm
+  long voltage = (long)proxSens * VOLTS_PER_UNIT; // ("proxSens" is from analog read)
+  //long inches = 23.897 * pow(voltage,-1.1907); //calc inches using "power" trend line from Excel
+  long rawDist = 60.495 * pow(voltage,-1.1904);     // same in cm
   //if (voltage < .2) return(150);        // out of range
  
   rawDist = constrain(rawDist, 20, 150); //cm
   
-  float filteredDist = smooth(rawDist, filteredDist, 0.8f, ((currentTime - previousTime) / 50000.0));  //divide by IRLOOPTIME (50ms)
+  long filteredDist = smooth(rawDist, filteredDist, 0.8f, ((currentTime - previousTime) / 50000.0));  //divide by IRLOOPTIME (50ms)
   
   return (filteredDist);  //cm
   
@@ -131,8 +131,8 @@ float proxSens = analogRead(PROXSENSPIN);
 /********************END OF SHARP IR READING*************/
 
 /*#if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-float findMode(float *data, int arraySize) {
-  float temp, maxData;
+long findMode(long *data, int arraySize) {
+  long temp, maxData;
 #else
 int findMode(int *data, int arraySize) {                          //old findMode kept for documentation
   int temp, maxData;

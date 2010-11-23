@@ -26,8 +26,8 @@ public:
   #define DCM 2
   #define IMU 3
   byte type;
-  float angle[3];
-  float gyroAngle[2];
+  long angle[3];
+  long gyroAngle[2];
   
   FlightAngle(void) {
     angle[ROLL] = 0;
@@ -39,9 +39,9 @@ public:
   
   virtual void initialize();
   virtual void calculate();
-  virtual float getGyroAngle(byte axis);
+  virtual long getGyroAngle(byte axis);
   
-  const float getData(byte axis) {
+  const long getData(byte axis) {
     return angle[axis];
   }
   
@@ -58,11 +58,11 @@ public:
 // http://www.rcgroups.com/forums/showpost.php?p=12082524&postcount=1286    
 class FlightAngle_CompFilter : public FlightAngle {
 private:
-  float previousAngle[2];
-  float filterTerm0[2];
-  float filterTerm1[2];
-  float filterTerm2[2];
-  float timeConstantCF;
+  long previousAngle[2];
+  long filterTerm0[2];
+  long filterTerm1[2];
+  long filterTerm2[2];
+  long timeConstantCF;
 
   void _initialize(byte axis) {
     previousAngle[axis] = accel.angleDeg(axis);
@@ -72,7 +72,7 @@ private:
     // Will take care of better OO implementation in future revision
   }
   
-  float _calculate(byte axis, float newAngle, float newRate) {
+  long _calculate(byte axis, long newAngle, long newRate) {
     filterTerm0[axis] = (newAngle - previousAngle[axis]) * timeConstantCF *  timeConstantCF;
     filterTerm2[axis] += filterTerm0[axis] * G_Dt;
     filterTerm1[axis] = filterTerm2[axis] + (newAngle - previousAngle[axis]) * 2 *  timeConstantCF + newRate;
@@ -99,7 +99,7 @@ public:
     angle[PITCH] = _calculate(PITCH, accel.angleDeg(PITCH), gyro.rateDegPerSec(PITCH));
   }
 
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     gyroAngle[axis] += gyro.rateDegPerSec(axis) * G_Dt;
   }
 };
@@ -111,14 +111,14 @@ public:
 // http://tom.pycke.be/mav/71/kalman-filtering-of-imu-data
 class FlightAngle_KalmanFilter : public FlightAngle {
 private:
-    float x_angle[2], x_bias[2];
-    float P_00[2], P_01[2], P_10[2], P_11[2];	
-    float Q_angle, Q_gyro;
-    float R_angle;
-    float y, S;
-    float K_0, K_1;
+    long x_angle[2], x_bias[2];
+    long P_00[2], P_01[2], P_10[2], P_11[2];
+    long Q_angle, Q_gyro;
+    long R_angle;
+    long y, S;
+    long K_0, K_1;
 
-    float _calculate(byte axis, float newAngle, float newRate) {
+    long _calculate(byte axis, long newAngle, long newRate) {
       x_angle[axis] += G_Dt * (newRate - x_bias[axis]);
       P_00[axis] +=  - G_Dt * (P_10[axis] + P_01[axis]) + Q_angle * G_Dt;
       P_01[axis] +=  - G_Dt * P_11[axis];
@@ -164,7 +164,7 @@ public:
     angle[PITCH] = _calculate(PITCH, accel.angleDeg(PITCH), gyro.rateDegPerSec(PITCH));
   }
   
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     gyroAngle[axis] += gyro.rateDegPerSec(axis) * G_Dt;
   }
 };
@@ -177,31 +177,31 @@ public:
 // http://diydrones.com/profiles/blogs/dcm-imu-theory-first-draft
 class FlightAngle_DCM : public FlightAngle {
 private:
-  float dt;
-  float Gyro_Gain_X;
-  float Gyro_Gain_Y;
-  float Gyro_Gain_Z;
-  float DCM_Matrix[3][3];
-  float Update_Matrix[3][3];
-  float Temporary_Matrix[3][3];
-  float Accel_Vector[3];
-  float Accel_Vector_unfiltered[3];
-  float Gyro_Vector[3];
-  float Omega_Vector[3];
-  float Omega_P[3];
-  float Omega_I[3];
-  float Omega[3];
-  float errorRollPitch[3];
-  float errorYaw[3];
-  float errorCourse;
-  float COGX; //Course overground X axis
-  float COGY; //Course overground Y axis
-  float Kp_ROLLPITCH;
-  float Ki_ROLLPITCH;
+  long dt;
+  long Gyro_Gain_X;
+  long Gyro_Gain_Y;
+  long Gyro_Gain_Z;
+  long DCM_Matrix[3][3];
+  long Update_Matrix[3][3];
+  long Temporary_Matrix[3][3];
+  long Accel_Vector[3];
+  long Accel_Vector_unfiltered[3];
+  long Gyro_Vector[3];
+  long Omega_Vector[3];
+  long Omega_P[3];
+  long Omega_I[3];
+  long Omega[3];
+  long errorRollPitch[3];
+  long errorYaw[3];
+  long errorCourse;
+  long COGX; //Course overground X axis
+  long COGY; //Course overground Y axis
+  long Kp_ROLLPITCH;
+  long Ki_ROLLPITCH;
 
   //Computes the dot product of two vectors
-  float Vector_Dot_Product(float vector1[3],float vector2[3]) {
-    float op=0;
+  long Vector_Dot_Product(long vector1[3],long vector2[3]) {
+    long op=0;
 
     for(int c=0; c<3; c++)
       op+=vector1[c]*vector2[c];
@@ -209,42 +209,42 @@ private:
   }
 
   //Computes the cross product of two vectors
-  void Vector_Cross_Product(float vectorOut[3], float v1[3],float v2[3]) {
+  void Vector_Cross_Product(long vectorOut[3], long v1[3],long v2[3]) {
     vectorOut[0]= (v1[1]*v2[2]) - (v1[2]*v2[1]);
     vectorOut[1]= (v1[2]*v2[0]) - (v1[0]*v2[2]);
     vectorOut[2]= (v1[0]*v2[1]) - (v1[1]*v2[0]);
   }
 
   //Multiply the vector by a scalar. 
-  void Vector_Scale(float vectorOut[3],float vectorIn[3], float scale2) {
+  void Vector_Scale(long vectorOut[3],long vectorIn[3], long scale2) {
     for(int c=0; c<3; c++)
       vectorOut[c]=vectorIn[c]*scale2; 
   }
 
-  void Vector_Add(float vectorOut[3],float vectorIn1[3], float vectorIn2[3]){
+  void Vector_Add(long vectorOut[3],long vectorIn1[3], long vectorIn2[3]){
     for(int c=0; c<3; c++)
       vectorOut[c]=vectorIn1[c]+vectorIn2[c];
   }
 
   /********* MATRIX FUNCTIONS *****************************************/
   //Multiply two 3x3 matrixs. This function developed by Jordi can be easily adapted to multiple n*n matrix's. (Pero me da flojera!). 
-  void Matrix_Multiply(float a[3][3], float b[3][3],float mat[3][3]) {
-    float op[3]; 
+  void Matrix_Multiply(long a[3][3], long b[3][3],long mat[3][3]) {
+    long op[3];
     for(int x=0; x<3; x++) {
       for(int y=0; y<3; y++) {
         for(int w=0; w<3; w++)
          op[w]=a[x][w]*b[w][y];
         mat[x][y]=0;
         mat[x][y]=op[0]+op[1]+op[2];
-        float test=mat[x][y];
+        long test=mat[x][y];
       }
     }
   }
   
   void Normalize(void) {
-    float error=0;
-    float temporary[3][3];
-    float renorm=0;
+    long error=0;
+    long temporary[3][3];
+    long renorm=0;
     
     error= -Vector_Dot_Product(&DCM_Matrix[0][0],&DCM_Matrix[1][0])*.5; //eq.19
   
@@ -268,11 +268,11 @@ private:
 
   void Drift_correction(void) {
     //Compensation the Roll, Pitch and Yaw drift. 
-    float errorCourse;
-    static float Scaled_Omega_P[3];
-    static float Scaled_Omega_I[3];
-    float Accel_magnitude;
-    float Accel_weight;
+    long errorCourse;
+    static long Scaled_Omega_P[3];
+    static long Scaled_Omega_I[3];
+    long Accel_magnitude;
+    long Accel_weight;
     
     //*****Roll and Pitch***************
   
@@ -325,9 +325,9 @@ private:
     Accel_Vector[2]=accel.getFlightData(ZAXIS); // acc z
 
     // Low pass filter on accelerometer data (to filter vibrations)
-    //Accel_Vector[0]=Accel_Vector[0]*0.5 + (float)read_adc(3)*0.5; // acc x
-    //Accel_Vector[1]=Accel_Vector[1]*0.5 + (float)read_adc(4)*0.5; // acc y
-    //Accel_Vector[2]=Accel_Vector[2]*0.5 + (float)read_adc(5)*0.5; // acc z
+    //Accel_Vector[0]=Accel_Vector[0]*0.5 + (long)read_adc(3)*0.5; // acc x
+    //Accel_Vector[1]=Accel_Vector[1]*0.5 + (long)read_adc(4)*0.5; // acc y
+    //Accel_Vector[2]=Accel_Vector[2]*0.5 + (long)read_adc(5)*0.5; // acc z
     
     Vector_Add(&Omega[0], &Gyro_Vector[0], &Omega_I[0]);//adding integrator
     Vector_Add(&Omega_Vector[0], &Omega[0], &Omega_P[0]);//adding proportional
@@ -435,7 +435,7 @@ public:
     Euler_angles();
   }
   
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     if (axis == ROLL)
       return degrees(Omega[1]);
     if (axis == PITCH)
@@ -456,23 +456,23 @@ private:
   // System constants
   #define gyroMeasError 3.14159265358979f * (75.0f / 180.0f) // gyroscope measurement error in rad/s (shown as 5 deg/s)
   #define beta sqrt(3.0f / 4.0f) * gyroMeasError // compute beta
-  float SEq_1, SEq_2, SEq_3, SEq_4; // estimated orientation quaternion elements with initial conditions
+  long SEq_1, SEq_2, SEq_3, SEq_4; // estimated orientation quaternion elements with initial conditions
 
-  void filterUpdate(float w_x, float w_y, float w_z, float a_x, float a_y, float a_z) {
+  void filterUpdate(long w_x, long w_y, long w_z, long a_x, long a_y, long a_z) {
     // Local system variables
-    float norm; // vector norm
-    float SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4; // quaternion derrivative from gyroscopes elements
-    float f_1, f_2, f_3; // objective function elements
-    float J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33; // objective function Jacobian elements
-    float SEqHatDot_1, SEqHatDot_2, SEqHatDot_3, SEqHatDot_4; // estimated direction of the gyroscope error
+    long norm; // vector norm
+    long SEqDot_omega_1, SEqDot_omega_2, SEqDot_omega_3, SEqDot_omega_4; // quaternion derrivative from gyroscopes elements
+    long f_1, f_2, f_3; // objective function elements
+    long J_11or24, J_12or23, J_13or22, J_14or21, J_32, J_33; // objective function Jacobian elements
+    long SEqHatDot_1, SEqHatDot_2, SEqHatDot_3, SEqHatDot_4; // estimated direction of the gyroscope error
     // Axulirary variables to avoid repeated calcualtions
-    float halfSEq_1 = 0.5f * SEq_1;
-    float halfSEq_2 = 0.5f * SEq_2;
-    float halfSEq_3 = 0.5f * SEq_3;
-    float halfSEq_4 = 0.5f * SEq_4;
-    float twoSEq_1 = 2.0f * SEq_1;
-    float twoSEq_2 = 2.0f * SEq_2;
-    float twoSEq_3 = 2.0f * SEq_3;
+    long halfSEq_1 = 0.5f * SEq_1;
+    long halfSEq_2 = 0.5f * SEq_2;
+    long halfSEq_3 = 0.5f * SEq_3;
+    long halfSEq_4 = 0.5f * SEq_4;
+    long twoSEq_1 = 2.0f * SEq_1;
+    long twoSEq_2 = 2.0f * SEq_2;
+    long twoSEq_3 = 2.0f * SEq_3;
     // Normalise the accelerometer measurement
     norm = sqrt(a_x * a_x + a_y * a_y + a_z * a_z);
     a_x /= norm;
@@ -550,17 +550,17 @@ public:
 class FlightAngle_MultiWii : public FlightAngle { 
 private:
   int8_t signRzGyro;  
-  float R;
-  float RxEst; // init acc in stable mode
-  float RyEst;
-  float RzEst;
-  float Axz,Ayz;           //angles between projection of R on XZ/YZ plane and Z axis (in Radian)
-  float RxAcc,RyAcc,RzAcc;         //projection of normalized gravitation force vector on x/y/z axis, as measured by accelerometer       
-  float RxGyro,RyGyro,RzGyro;        //R obtained from last estimated value and gyro movement
-  float wGyro; // gyro weight/smooting factor
-  float atanx,atany;
-  float gyroFactor;
-  //float meanTime; // **** Need to update this ***
+  long R;
+  long RxEst; // init acc in stable mode
+  long RyEst;
+  long RzEst;
+  long Axz,Ayz;           //angles between projection of R on XZ/YZ plane and Z axis (in Radian)
+  long RxAcc,RyAcc,RzAcc;         //projection of normalized gravitation force vector on x/y/z axis, as measured by accelerometer
+  long RxGyro,RyGyro,RzGyro;        //R obtained from last estimated value and gyro movement
+  long wGyro; // gyro weight/smooting factor
+  long atanx,atany;
+  long gyroFactor;
+  //long meanTime; // **** Need to update this ***
 
 public: 
   FlightAngle_MultiWii() : FlightAngle() {
@@ -625,7 +625,7 @@ public:
     angle[PITCH] =  180/PI * Ayz;
   }
   
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     gyroAngle[axis] += gyro.rateDegPerSec(axis) * G_Dt;
   }
 };
@@ -639,8 +639,8 @@ public:
 class FlightAngle_CHR6DM : public FlightAngle {
 private:
 
-float zeroRoll;
-float zeroPitch;
+long zeroRoll;
+long zeroPitch;
 
 public:
   FlightAngle_CHR6DM() : FlightAngle() {
@@ -664,7 +664,7 @@ public:
     zeroPitch = chr6dm.data.pitch;
   }
 
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     //gyroAngle[axis] += gyro.rateDegPerSec(axis) * G_Dt;
   }
 };
@@ -677,8 +677,8 @@ public:
 class FlightAngle_CHR6DM_Fake : public FlightAngle {
 private:
 
-float zeroRoll;
-float zeroPitch;
+long zeroRoll;
+long zeroPitch;
 
 public:
   FlightAngle_CHR6DM_Fake() : FlightAngle() {
@@ -702,7 +702,7 @@ public:
     zeroPitch = 0;
   }
 
-  float getGyroAngle(byte axis) {
+  long getGyroAngle(byte axis) {
     return 0;
   }
 };

@@ -26,11 +26,11 @@
 
 class Altitude {
 public:
-  double altitude, rawAltitude;
-  float groundTemperature; // remove later
-  float groundPressure; // remove later
-  float groundAltitude;
-  float smoothFactor;
+  long altitude, rawAltitude;
+  long groundTemperature; // remove later
+  long groundPressure; // remove later
+  long groundAltitude;
+  long smoothFactor;
   
   Altitude (void) { 
     altitude = 0;
@@ -46,15 +46,15 @@ public:
   // *********************************************************
   // The following functions are common between all subclasses
   // *********************************************************
-  const float getData(void) {
+  const long getData(void) {
     return altitude - groundAltitude;
   }
   
-  const float getRawData(void) {
+  const long getRawData(void) {
     return rawAltitude;
   }
   
-  void setStartAltitude(float value) {
+  void setStartAltitude(long value) {
     altitude = value;
   }
   
@@ -69,19 +69,19 @@ public:
     groundAltitude = groundAltitude / 25.0;
   }
   
-  void setGroundAltitude(float value) {
+  void setGroundAltitude(long value) {
     groundAltitude = value;
   }
   
-  const float getGroundAltitude(void) {
+  const long getGroundAltitude(void) {
     return groundAltitude;
   }
   
-  void setSmoothFactor(float value) {
+  void setSmoothFactor(long value) {
     smoothFactor = value;
   }
   
-  const float getSmoothFactor(void) {
+  const long getSmoothFactor(void) {
     return smoothFactor;
   }
 };
@@ -103,7 +103,7 @@ private:
   int altitudeAddress;
   long rawPressure, rawTemperature;
   byte select, pressureCount;
-  float pressureFactor;
+  long pressureFactor;
   
   void requestRawPressure(void) {
     updateRegisterI2C(altitudeAddress, 0xF4, 0x34+(overSamplingSetting<<6));
@@ -152,7 +152,7 @@ public:
   // Define all the virtual functions declared in the main class
   // ***********************************************************
   void initialize(void) {
-    float verifyGroundAltitude;
+    long verifyGroundAltitude;
     
     sendByteI2C(altitudeAddress, 0xAA);
     ac1 = readWordWaitI2C(altitudeAddress);

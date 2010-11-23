@@ -26,7 +26,7 @@
 class exampleClass {
 public: 
   int exampleVariable;
-  float exampleData[3];
+  long exampleData[3];
   exampleClass(void) { 
     // this is the constructor of the object and must have the same name 
     // can be used to initialize any of the variables declared above 
@@ -89,16 +89,16 @@ public:
 // ***********************************************************************
 class CompassExample {
 private: // not found in the example above, but it's possible to declare private variables only seen in the main class
-  float cosRoll;
-  float sinRoll;
-  float cosPitch;
-  float sinPitch;
-  float magX;
-  float magY;
+  long cosRoll;
+  long sinRoll;
+  long cosPitch;
+  long sinPitch;
+  long magX;
+  long magY;
   
 public: 
   int compassAddress;
-  float heading;
+  long heading;
   int measuredMagX;
   int measuredMagY;
   int measuredMagZ;
@@ -117,7 +117,7 @@ public:
   // *********************************************************
   // The following functions are common between all subclasses
   // *********************************************************
-  const float getHeading(void) {
+  const long getHeading(void) {
     // Heading calculation based on code written by FabQuad
     // http://aeroquad.com/showthread.php?691-Hold-your-heading-with-HMC5843-Magnetometer
     cosRoll = cos(radians(flightAngle.getData(ROLL)));

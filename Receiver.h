@@ -27,10 +27,10 @@ public:
   int transmitterTrim[3];
   // Controls the strength of the commands sent from the transmitter
   // xmitFactor ranges from 0.01 - 1.0 (0.01 = weakest, 1.0 - strongest)
-  float xmitFactor; // Read in from EEPROM
-  float transmitterSmooth[6];
-  float mTransmitter[6];
-  float bTransmitter[6];
+  long xmitFactor; // Read in from EEPROM
+  long transmitterSmooth[6];
+  long mTransmitter[6];
+  long bTransmitter[6];
   unsigned long currentTime, previousTime;
 
   Receiver(void) { 
@@ -109,39 +109,39 @@ public:
     transmitterTrim[channel] = value;
   }
 
-  const float getSmoothFactor(byte channel) {
+  const long getSmoothFactor(byte channel) {
     return transmitterSmooth[channel];
   }
 
-  void setSmoothFactor(byte channel, float value) {
+  void setSmoothFactor(byte channel, long value) {
     transmitterSmooth[channel] = value;
   }
 
-  const float getXmitFactor(void) {
+  const long getXmitFactor(void) {
     return xmitFactor;
   }
 
-  void setXmitFactor(float value) {
+  void setXmitFactor(long value) {
     xmitFactor = value;
   }
 
-  const float getTransmitterSlope(byte channel) {
+  const long getTransmitterSlope(byte channel) {
     return mTransmitter[channel];
   }
 
-  void setTransmitterSlope(byte channel, float value) {
+  void setTransmitterSlope(byte channel, long value) {
     mTransmitter[channel] = value;
   }
 
-  const float getTransmitterOffset(byte channel) {
+  const long getTransmitterOffset(byte channel) {
     return bTransmitter[channel];
   }
 
-  void setTransmitterOffset(byte channel, float value) {
+  void setTransmitterOffset(byte channel, long value) {
     bTransmitter[channel] = value;
   }
 
-  const float getAngle(byte channel) {
+  const long getAngle(byte channel) {
     // Scale 1000-2000 usecs to -45 to 45 degrees
     // m = 0.09, b = -135
     // reduce transmitterCommand by xmitFactor to lower sensitivity of transmitter input

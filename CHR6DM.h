@@ -26,6 +26,7 @@
 #define DEFAULT_TIMEOUT 1000
 
 
+#include "Math.h"
 
 // Null packet
 
@@ -108,7 +109,7 @@
      const int  BROADCAST_MODE_REPORT     =  0xC8;
 
 
-     const int  CHANNEL_YAW_MASK           = 1<<15;
+     const int  CHANNEL_YAW_MASK           = 1<<15 ;
      const int  CHANNEL_PITCH_MASK         = 1<<14;
      const int  CHANNEL_ROLL_MASK          = 1<<13;
      const int  CHANNEL_YAW_RATE_MASK      = 1<<12;
@@ -127,21 +128,24 @@
 
 
     // Scale factors
-     const double SCALE_YAW        = 0.0109863; // ï¿½/LSB
-     const double SCALE_PITCH      = 0.0109863;
-     const double SCALE_ROLL       = 0.0109863;
-     const double SCALE_YAW_RATE   = 0.0137329; // ï¿½/s/LSB
-     const double SCALE_PITCH_RATE = 0.0137329;
-     const double SCALE_ROLL_RATE  = 0.0137329;
-     const double SCALE_MAG_X      = 0.061035; // mGauss/LSB
-     const double SCALE_MAG_Y      = 0.061035;
-     const double SCALE_MAG_Z      = 0.061035;
-     const double SCALE_GYRO_X     = 0.01812; // ï¿½/s/LSB
-     const double SCALE_GYRO_Y     = 0.01812;
-     const double SCALE_GYRO_Z     = 0.01812;
-     const double SCALE_ACCEL_X    = 0.106812; // mg/LSB
-     const double SCALE_ACCEL_Y    = 0.106812;
-     const double SCALE_ACCEL_Z    = 0.106812;
+     const long SCALE_YAW        = 0.0109863 * DIGITS; // ï¿½/LSB
+     const long SCALE_PITCH      = 0.0109863 * DIGITS;
+     const long SCALE_ROLL       = 0.0109863 * DIGITS;
+     const long SCALE_YAW_RATE   = 0.0137329 * DIGITS; // ï¿½/s/LSB
+     const long SCALE_PITCH_RATE = 0.0137329 * DIGITS;
+     const long SCALE_ROLL_RATE  = 0.0137329 * DIGITS;
+     const long SCALE_MAG_X      = 0.061035  * DIGITS; // mGauss/LSB
+     const long SCALE_MAG_Y      = 0.061035  * DIGITS;
+     const long SCALE_MAG_Z      = 0.061035  * DIGITS;
+     const long SCALE_GYRO_X     = 0.01812   * DIGITS; // ï¿½/s/LSB
+     const long SCALE_GYRO_Y     = 0.01812   * DIGITS;
+     const long SCALE_GYRO_Z     = 0.01812   * DIGITS;
+     //const long SCALE_ACCEL_X    = 0.106812  * DIGITS; // mg/LSB
+     const long SCALE_ACCEL_X    = 1; // mg/LSB
+     //const long SCALE_ACCEL_Y    = 0.106812  * DIGITS;
+     const long SCALE_ACCEL_Y    = 1;
+     //const long SCALE_ACCEL_Z    = 0.106812  * DIGITS;
+     const long SCALE_ACCEL_Z    = 1;
 
     const char PACKET_HEADER[] = {'s','n','p'};
     const int HEADER_CHECKSUM = 's'+'n'+'p';
@@ -171,21 +175,21 @@ public:
              bool ayEnabled;
              bool azEnabled;
 
-             double yaw;
-             double pitch;
-             double roll;
-             double yawRate;
-             double pitchRate;
-             double rollRate;
-             double mx;
-             double my;
-             double mz;
-             double gx;
-             double gy;
-             double gz;
-             double ax;
-             double ay;
-             double az;
+             long yaw;
+             long pitch;
+             long roll;
+             long yawRate;
+             long pitchRate;
+             long rollRate;
+             long mx;
+             long my;
+             long mz;
+             long gx;
+             long gy;
+             long gz;
+             long ax;
+             long ay;
+             long az;
         };
 
 

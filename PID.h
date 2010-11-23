@@ -19,9 +19,9 @@
 */
 
 // Modified from http://www.arduino.cc/playground/Main/BarebonesPIDForEspresso
-float updatePID(float targetPosition, float currentPosition, struct PIDdata *PIDparameters) {
-  float error;
-  float dTerm;
+long updatePID(long targetPosition, long currentPosition, struct PIDdata *PIDparameters) {
+  long error;
+  long dTerm;
 
   error = targetPosition - currentPosition;
   
