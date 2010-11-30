@@ -26,7 +26,7 @@
 #define DEFAULT_TIMEOUT 1000
 
 
-#include "Math.h"
+#define DIGITS 1000
 
 // Null packet
 
