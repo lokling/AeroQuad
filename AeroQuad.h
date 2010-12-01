@@ -401,4 +401,8 @@ long findMode(long *data, int arraySize); // defined in Sensors.pde
 int findMode(int *data, int arraySize); // defined in Sensors.pde
 #endif
 
+// Error handling of virtual functions of  Receiver and Motors base classes  
+extern "C" void __cxa_pure_virtual() { Serial.print("ERROR: Virtual function called! "); }
+
+
 
