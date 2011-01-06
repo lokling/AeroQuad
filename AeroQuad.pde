@@ -29,7 +29,7 @@
 // Select which hardware you wish to use with the AeroQuad Flight Software
 
 //#define AeroQuad_v1         // Arduino 2009 with AeroQuad Shield v1.7 and below
-#define AeroQuad_v18        // Arduino 2009 with AeroQuad Shield v1.8
+//#define AeroQuad_v18        // Arduino 2009 with AeroQuad Shield v1.8
 //#define AeroQuad_Wii        // Arduino 2009 with Wii Sensors and AeroQuad Shield v1.x
 //#define AeroQuadMega_v1     // Arduino Mega with AeroQuad Shield v1.7 and below
 //#define AeroQuadMega_v2     // Arduino Mega with AeroQuad Shield v2.x
@@ -37,8 +37,12 @@
 //#define ArduCopter          // ArduPilot Mega (APM) with APM Sensor Board
 //#define Multipilot          // Multipilot board with Lys344 and ADXL 610 Gyro (needs debug)
 //#define MultipilotI2C       // Active Multipilot I2C and Mixertable (needs debug)
-//#define AeroQuadMega_CHR6DM // Clean Arduino Mega with CHR6DM as IMU/heading ref.
+#define AeroQuadMega_CHR6DM // Clean Arduino Mega with CHR6DM as IMU/heading ref.
 //#define APM_OP_CHR6DM       // ArduPilot Mega with CHR6DM as IMU/heading ref., Oilpan for barometer (just uncomment AltitudeHold for baro), and voltage divider
+#define  CHR6DM_FAKE_GYRO;
+#define  CHR6DM_FAKE_ACCEL;
+#define  CHR6DM_FAKE_MOTORS;
+
 
 /****************************************************************************
  *********************** Define Flight Configuration ************************
@@ -56,7 +60,7 @@
 
 // Yaw Gyro Type
 // Use only one of the following definitions
-#define IXZ // IXZ-500 Flat Yaw Gyro or ITG-3200 Triple Axis Gyro
+//#define IXZ // IXZ-500 Flat Yaw Gyro or ITG-3200 Triple Axis Gyro
 //#define IDG // IDG-300 or IDG-500 Dual Axis Gyro
 
 // Camera Stabilization (experimental)
@@ -161,12 +165,13 @@
 #endif
 
 #ifdef AeroQuadMega_CHR6DM
-  Accel_CHR6DM accel;
-  Gyro_CHR6DM gyro;
+  Accel_CHR6DM_Fake accel;
+  Gyro_CHR6DM_Fake gyro;
   Receiver_AeroQuadMega receiver;
-  Motors_PWM motors;
+  Motors_PWM_Fake motors;
   #include "FlightAngle.h"
-  FlightAngle_CHR6DM flightAngle;
+  //FlightAngle_CHR6DM flightAngle;
+  FlightAngle_DCM flightAngle;
   #include "Compass.h"
   Compass_CHR6DM compass;
 #endif
@@ -247,6 +252,8 @@
 // ************************************************************
 void setup() {
   Serial.begin(BAUD);
+  Serial2.begin(BAUD);
+  Serial2.println("Starting!");
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
   Serial1.begin(BAUD);
   PORTD = B00000100;
@@ -302,7 +309,7 @@ void setup() {
   accel.initialize(); // defined in Accel.h
   //accel.setOneG(accel.getFlightData(ZAXIS));
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM)
-  flightAngle.calibrate(); //defined in FlightAngle.pde
+  //flightAngle.calibrate(); //defined in FlightAngle.pde
   #endif
   // Calibrate sensors
   gyro.autoZero(); // defined in Gyro.h

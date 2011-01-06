@@ -401,7 +401,7 @@ private:
 
 public:
   Accel_Wii() : Accel(){
-    accelScaleFactor = 0;    
+    accelScaleFactor = 1;    
   }
   
   void initialize(void) {
@@ -461,7 +461,7 @@ private:
 
 public:
   Accel_CHR6DM() : Accel(){
-    accelScaleFactor = 0;
+    accelScaleFactor = 1;
   }
 
   void initialize(void) {
@@ -531,7 +531,7 @@ private:
 
 public:
   Accel_CHR6DM_Fake() : Accel(){
-    accelScaleFactor = 0;
+    accelScaleFactor = 1;
   }
 
   void initialize(void) {
@@ -554,9 +554,9 @@ public:
       accelADC[YAXIS] = fakeAccelPitch - accelZero[YAXIS];
       accelADC[ZAXIS] = fakeAccelYaw - accelOneG;
 
-      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
-      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor, ((currentTime - previousTime) / 5000.0));
+      accelData[XAXIS] = smooth(accelADC[XAXIS], accelData[XAXIS], smoothFactor);
+      accelData[YAXIS] = smooth(accelADC[YAXIS], accelData[YAXIS], smoothFactor);
+      accelData[ZAXIS] = smooth(accelADC[ZAXIS], accelData[ZAXIS], smoothFactor);
     previousTime = currentTime;
   }
   

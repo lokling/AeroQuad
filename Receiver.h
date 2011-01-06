@@ -50,8 +50,8 @@ public:
   // ******************************************************************
   // The following function calls must be defined in any new subclasses
   // ******************************************************************
-  virtual void initialize(void) = 0;
-  virtual void read(void) = 0;
+  virtual void initialize(void) {};
+  virtual void read(void){};
 
   // **************************************************************
   // The following functions are common between all Gyro subclasses

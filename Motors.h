@@ -64,9 +64,9 @@ public:
   };
   
   // The following function calls must be defined in any new subclasses
-  virtual void initialize(void) = 0;
-  virtual void write (void) = 0;
-  virtual void commandAllMotors(int motorCommand) = 0;
+  virtual void initialize(void) {};
+  virtual void write (void){};
+  virtual void commandAllMotors(int motorCommand) {};
   
   //Any number of optional methods can be configured as needed by the SubSystem to expose functionality externally
   void pulseMotors(byte quantity) {
@@ -313,19 +313,11 @@ public:
 #ifdef CHR6DM_FAKE_MOTORS
 class Motors_PWM_Fake : public Motors {
 private:
-  #if defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii) || defined (AeroQuadMega_CHR6DM)
-    #define FRONTMOTORPIN 2
-    #define REARMOTORPIN 3
-    #define RIGHTMOTORPIN 5
-    #define LEFTMOTORPIN 6
-    #define LASTMOTORPIN 7
-  #else
-    #define FRONTMOTORPIN 3
-    #define REARMOTORPIN 9
-    #define RIGHTMOTORPIN 10
-    #define LEFTMOTORPIN 11
-    #define LASTMOTORPIN 12
-  #endif
+    #define FRONTMOTORPIN 0
+    #define REARMOTORPIN 1
+    #define RIGHTMOTORPIN 2
+    #define LEFTMOTORPIN 3
+    #define LASTMOTORPIN 4
   int minCommand;
   byte pin;
 
@@ -338,37 +330,36 @@ private:
     // b = y1 - (m * x1) = 126 - (0.124 * 1000) = 2
     mMotorCommand = 0.124;
     bMotorCommand = 2.0;
+    //mMotorCommand = 0.0005;
+    //bMotorCommand = 0.3;
   }
 
-  void initialize(void) {
-    pinMode(FRONTMOTORPIN, OUTPUT);
-    fake_analogWrite(FRONTMOTORPIN, 124);
-    pinMode(REARMOTORPIN, OUTPUT);
-    fake_analogWrite(REARMOTORPIN, 124);
-    pinMode(RIGHTMOTORPIN, OUTPUT);
-    fake_analogWrite(RIGHTMOTORPIN, 124);		
-    pinMode(LEFTMOTORPIN, OUTPUT);
+   void initialize(void) {
+    commandAllMotors(1000);
   }
 
   void write(void) {
-    fake_analogWrite(FRONTMOTORPIN, (motorCommand[FRONT] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(REARMOTORPIN, (motorCommand[REAR] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(RIGHTMOTORPIN, (motorCommand[RIGHT] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(LEFTMOTORPIN, (motorCommand[LEFT] * mMotorCommand) + bMotorCommand);
+    fake_analogWrite(FRONTMOTORPIN, (motorCommand[FRONT] / 8));
+    fake_analogWrite(REARMOTORPIN, (motorCommand[REAR] / 8));
+    fake_analogWrite(RIGHTMOTORPIN, (motorCommand[RIGHT] / 8));
+    fake_analogWrite(LEFTMOTORPIN, (motorCommand[LEFT] / 8));
+
   }
 
   void commandAllMotors(int _motorCommand) {   // Sends commands to all motors
-    fake_analogWrite(FRONTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(REARMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(RIGHTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(LEFTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
+    fake_analogWrite(FRONTMOTORPIN, (_motorCommand / 8));
+    fake_analogWrite(REARMOTORPIN, (_motorCommand / 8));
+    fake_analogWrite(RIGHTMOTORPIN, (_motorCommand / 8));
+    fake_analogWrite(LEFTMOTORPIN, (_motorCommand / 8));
   }
 
+
+
   void fake_analogWrite(int pin, int value){
-    Serial2.print("analogWrite:");
+    Serial2.print("motor");
     Serial2.print(pin);
-    Serial2.print(",");
-    Serial2.println(value);
+    Serial2.print("=");
+    Serial2.println((float)(value-124)/125.0);
   }
 };
 #endif
