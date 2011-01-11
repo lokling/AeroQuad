@@ -584,6 +584,7 @@ public:
     gyroADC[YAW] = fakeGyroYaw - gyroZero[ZAXIS]; //gz rollRate
 
     gyroData[ROLL] = smooth(gyroADC[ROLL], gyroData[ROLL], smoothFactor);
+    Serial.print("gyroRoll=");Serial.println(gyroData[ROLL]);
     gyroData[PITCH] = smooth(gyroADC[PITCH], gyroData[PITCH], smoothFactor);
     gyroData[YAW] = smooth(gyroADC[YAW], gyroData[YAW],smoothFactor);
     previousTime = currentTime;
@@ -640,19 +641,19 @@ public:
  void readLine(){
      while( Serial2.available()>0){
 
-         //Serial2.println("Starting readline");
+         //Serial.println("Starting readline");
          byte c;
 
          while( Serial2.available()>0 && (c = Serial2.read())!= 13  ) {  // buffer up a line
-           //Serial2.print(c);//Debug echo
+           //Serial.print(c);//Debug echo
            line+= c;
          }
 
          if (c==13){
 
-            //Serial2.println("Parsing command:");
+            //Serial.println("Parsing command:");
             //Serial.println(line);
-            //Serial2.println("------");
+            //Serial.println("------");
 
                        // TODO check that
             if (line.startsWith("gx=")){

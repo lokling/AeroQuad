@@ -351,6 +351,7 @@ void setup() {
   #endif
   #if defined(AeroQuadMega_CHR6DM) || defined(APM_OP_CHR6DM) 
       gyro.invert(PITCH);
+      gyro.invert(YAW);
   #endif
   #ifdef Multipilot
     accel.invert(PITCH);

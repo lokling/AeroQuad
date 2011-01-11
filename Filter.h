@@ -20,9 +20,9 @@
 
 // Low pass filter, kept as regular C function for speed
 float smooth(float currentData, float previousData, float smoothFactor) {
-  if (smoothFactor != 1.0) //only apply time compensated filter if smoothFactor is applied
-    return (previousData * (1.0 - smoothFactor) + (currentData * smoothFactor)); 
-  else
+  //if (smoothFactor != 1.0) //only apply time compensated filter if smoothFactor is applied
+  //  return (previousData * (1.0 - smoothFactor) + (currentData * smoothFactor));
+  //else
     return currentData; //if smoothFactor == 1.0, do not calculate, just bypass!
 }
 
