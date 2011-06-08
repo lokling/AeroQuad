@@ -295,7 +295,7 @@ class Gyro_XPLANE : public Gyro {
 private:
 
 public:
-  Gyro_XPLANE : Gyro() {
+  Gyro_XPLANE() : Gyro() {
     gyroFullScaleOutput = 2000.0;   // ITG3200 full scale output = +/- 2000 deg/sec
     gyroScaleFactor = radians(1.0 / 14.375);  //  ITG3200 14.375 LSBs per °/sec
 

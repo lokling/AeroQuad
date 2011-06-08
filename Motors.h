@@ -310,7 +310,7 @@ public:
 /******************************************************/
 /********************* XPLANE Motors ****************/
 /******************************************************/
-#ifdef XPLANE_MOTORS
+#ifdef XPLANE
 class Motors_XPLANE : public Motors {
 private:
   #if defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii) || defined (AeroQuadMega_CHR6DM)
