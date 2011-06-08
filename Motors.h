@@ -308,10 +308,10 @@ public:
 };
 
 /******************************************************/
-/********************* Fake PWM Motors ****************/
+/********************* XPLANE Motors ****************/
 /******************************************************/
-#ifdef CHR6DM_FAKE_MOTORS
-class Motors_PWM_Fake : public Motors {
+#ifdef XPLANE_MOTORS
+class Motors_XPLANE : public Motors {
 private:
   #if defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii) || defined (AeroQuadMega_CHR6DM)
     #define FRONTMOTORPIN 2
@@ -330,7 +330,7 @@ private:
   byte pin;
 
  public:
-  Motors_PWM_Fake() : Motors(){
+  Motors_XPLANE() : Motors(){
     // Scale motor commands to analogWrite
     // Only supports commands from 0-255 => 0 - 100% duty cycle
     // Usable pulsewith from approximately 1000-2000 us = 126 - 250

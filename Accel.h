@@ -287,6 +287,77 @@ public:
 #endif
 
 /******************************************************/
+/********* XPLANE Accelerometer *************/
+/******************************************************/
+#if defined(XPLANE)
+class Accel_XPLANE : public Accel {
+private:
+
+public:
+  Accel_XPLANE() : Accel(){
+
+  }
+
+  void initialize(void) {
+    byte data;
+
+    accelOneG        = readFloat(ACCEL1G_ADR);
+    accelZero[XAXIS] = readFloat(LEVELPITCHCAL_ADR);
+    accelZero[YAXIS] = readFloat(LEVELROLLCAL_ADR);
+    accelZero[ZAXIS] = readFloat(LEVELZCAL_ADR);
+    smoothFactor     = readFloat(ACCSMOOTH_ADR);
+
+
+  }
+
+  void measure(void) {
+
+      accelADC[XAXIS] = fakeAccelRoll - accelZero[XAXIS];
+      accelADC[YAXIS] = accelZero[YAXIS] - fakeAccelPitch;
+      accelADC[ZAXIS] = accelZero[ZAXIS] - fakeAccelYaw;
+
+
+    accelData[XAXIS] = filterSmooth(accelADC[XAXIS] * accelScaleFactor, accelData[XAXIS], smoothFactor);
+    accelData[YAXIS] = filterSmooth(accelADC[YAXIS] * accelScaleFactor, accelData[YAXIS], smoothFactor);
+    accelData[ZAXIS] = filterSmooth(accelADC[ZAXIS] * accelScaleFactor, accelData[ZAXIS], smoothFactor);
+
+  }
+
+  const int getFlightData(byte axis) {
+      return getRaw(axis) >> 3;
+  }
+
+  // Allows user to zero accelerometers on command
+  void calibrate(void) {
+    int findZero[FINDZERO];
+    int dataAddress;
+
+    for (byte calAxis = XAXIS; calAxis < ZAXIS; calAxis++) {
+
+
+      for (int i=0; i<FINDZERO; i++) {
+        findZero[i] = xplaneAccel[calAxis];
+        delay(10);
+      }
+      accelZero[calAxis] = findMedian(findZero, FINDZERO);
+    }
+
+    // replace with estimated Z axis 0g value
+    accelZero[ZAXIS] = (accelZero[XAXIS] + accelZero[PITCH]) / 2;
+    // store accel value that represents 1g
+    measure();
+    accelOneG = -accelData[ZAXIS];
+
+    writeFloat(accelOneG,        ACCEL1G_ADR);
+    writeFloat(accelZero[XAXIS], LEVELPITCHCAL_ADR);
+    writeFloat(accelZero[YAXIS], LEVELROLLCAL_ADR);
+    writeFloat(accelZero[ZAXIS], LEVELZCAL_ADR);
+  }
+};
+
+#endif
+
+/******************************************************/
 /********* AeroQuad Mini v1 Accelerometer *************/
 /******************************************************/
 #if defined(AeroQuad_Mini)

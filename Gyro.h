@@ -287,6 +287,85 @@ public:
 #endif
 
 /******************************************************/
+/****************** XPLANE Gyro ******************/
+/******************************************************/
+#if defined(XPLANE)
+
+class Gyro_XPLANE : public Gyro {
+private:
+
+public:
+  Gyro_XPLANE : Gyro() {
+    gyroFullScaleOutput = 2000.0;   // ITG3200 full scale output = +/- 2000 deg/sec
+    gyroScaleFactor = radians(1.0 / 14.375);  //  ITG3200 14.375 LSBs per °/sec
+
+    previousGyroTime = micros();
+  }
+
+  void initialize(void) {
+//    this->_initialize(0,1,2);
+    gyroZero[XAXIS] = readFloat(GYRO_ROLL_ZERO_ADR);
+    gyroZero[YAXIS] = readFloat(GYRO_PITCH_ZERO_ADR);
+    gyroZero[ZAXIS] = readFloat(GYRO_YAW_ZERO_ADR);
+    smoothFactor = readFloat(GYROSMOOTH_ADR);
+
+
+  }
+
+  void measure(void) {
+
+    for (byte axis = ROLL; axis < LASTAXIS; axis++) {
+      if (axis == ROLL)
+        gyroADC[axis] = ((Wire.receive() << 8) | Wire.receive()) - gyroZero[axis];
+      else
+        gyroADC[axis] = gyroZero[axis] - ((Wire.receive() << 8) | Wire.receive());
+      gyroData[axis] = filterSmooth((float)gyroADC[axis] * gyroScaleFactor, gyroData[axis], smoothFactor);
+    }
+
+    //calculateHeading();
+    // gyroLastADC can maybe replaced with Zero, but will leave as is for now
+    // this provides a small guard band for the gyro on Yaw before it increments or decrements the rawHeading
+    long int currentGyroTime = micros();
+    if (gyroData[YAW] > radians(1.0) || gyroData[YAW] < radians(-1.0)) {
+      rawHeading += gyroData[YAW] * ((currentGyroTime - previousGyroTime) / 1000000.0);
+    }
+    previousGyroTime = currentGyroTime;
+
+  }
+
+  // returns raw ADC data from the Gyro centered on zero +/- values
+  const int getFlightData(byte axis) {
+    //int reducedData = getRaw(axis) >> 3;
+    //if ((reducedData < 5) && (reducedData > -5)) reducedData = 0;
+    if (axis == PITCH)
+      return -(getRaw(axis) >> 3);
+    else
+      return (getRaw(axis) >> 3);
+  }
+
+  void calibrate() {
+    autoZero();
+    writeFloat(gyroZero[ROLL], GYRO_ROLL_ZERO_ADR);
+    writeFloat(gyroZero[PITCH], GYRO_PITCH_ZERO_ADR);
+    writeFloat(gyroZero[YAW], GYRO_YAW_ZERO_ADR);
+  }
+
+  void autoZero() {
+    int findZero[FINDZERO];
+    for (byte calAxis = ROLL; calAxis < LASTAXIS; calAxis++) {
+      for (int i=0; i<FINDZERO; i++) {
+        sendByteI2C(gyroAddress, (calAxis * 2) + 0x1D);
+        findZero[i] = readWordI2C(gyroAddress);
+        delay(10);
+      }
+      gyroZero[calAxis] = findMedian(findZero, FINDZERO);
+    }
+  }
+};
+#endif
+
+
+/******************************************************/
 /**************** ArduCopter Gyro *********************/
 /******************************************************/
 #ifdef ArduCopter
