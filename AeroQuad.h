@@ -164,6 +164,16 @@ int minAcro; // Read in from EEPROM, defines min throttle during flips
   float CHR_PitchAngle;
 #endif
 
+#if defined(XPLANE)
+float fakeGyroRoll;
+float fakeGyroPitch;
+float fakeGyroYaw;
+
+float fakeAccelRoll;
+float fakeAccelPitch;
+float fakeAccelYaw;
+#endif
+
 // Heading hold
 byte headingHoldConfig;
 //float headingScaleFactor;
@@ -237,7 +247,8 @@ HardwareSerial *binaryPort;
 /**************************************************************/
 /******************* Loop timing parameters *******************/
 /**************************************************************/
-/*#define RECEIVERLOOPTIME 100000  // 100ms, 10Hz
+/*
+#define RECEIVERLOOPTIME 100000  // 100ms, 10Hz
 #define COMPASSLOOPTIME 103000   // 103ms, ~10Hz
 #define ALTITUDELOOPTIME 50000   // 50ms x 2, 10Hz (alternates between temperature and pressure measurements)
 #define BATTERYLOOPTIME 100000   // 100ms, 10Hz

@@ -39,12 +39,12 @@ public:
     gyroAngle[PITCH] = 0;
   }
   
-  virtual void initialize(float hdgX, float hdgY);
+  virtual void initialize(float hdgX, float hdgY) = 0;
   virtual void calculate(float rollRate,           float pitchRate,     float yawRate,       \
                          float longitudinalAccel,  float lateralAccel,  float verticalAccel, \
-                         float oneG,               float magX,          float magY);
-  virtual float getGyroUnbias(byte axis);
-  virtual void calibrate();
+                         float oneG,               float magX,          float magY) = 0;
+  virtual float getGyroUnbias(byte axis) = 0;
+  virtual void calibrate() = 0;
  
   // returns the angle of a specific axis in SI units (radians)
   const float getData(byte axis) {

@@ -295,7 +295,7 @@ public:
 /******************************************************/
 /*************** AeroQuad Mega PCINT ******************/
 /******************************************************/
-#if defined(AeroQuadMega_v1) || defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii) || defined(AeroQuadMega_CHR6DM)
+#if defined(AeroQuadMega_v1) || defined(AeroQuadMega_v2) || defined(AeroQuadMega_Wii) || defined(AeroQuadMega_CHR6DM) || defined(XPLANE)
 volatile uint8_t *port_to_pcmask[] = {
   &PCMSK0,
   &PCMSK1,
