@@ -296,10 +296,8 @@ private:
 
 public:
   Gyro_XPLANE() : Gyro() {
-    gyroFullScaleOutput = 2000.0;   // ITG3200 full scale output = +/- 2000 deg/sec
-    gyroScaleFactor = radians(1.0 / 14.375);  //  ITG3200 14.375 LSBs per °/sec
+    gyroScaleFactor = 1;
 
-    previousGyroTime = micros();
   }
 
   void initialize(void) {
@@ -314,17 +312,15 @@ public:
 
   void measure(void) {
 
-    for (byte axis = ROLL; axis < LASTAXIS; axis++) {
-      if (axis == ROLL)
-        gyroADC[axis] = ((Wire.receive() << 8) | Wire.receive()) - gyroZero[axis];
-      else
-        gyroADC[axis] = gyroZero[axis] - ((Wire.receive() << 8) | Wire.receive());
-      gyroData[axis] = filterSmooth((float)gyroADC[axis] * gyroScaleFactor, gyroData[axis], smoothFactor);
-    }
+    gyroADC[XAXIS] = fakeGyroRoll - gyroZero[XAXIS];
+    gyroADC[YAXIS] =  gyroZero[YAXIS] - fakeGyroPitch;
+    gyroADC[ZAXIS] =  gyroZero[ZAXIS] - fakeGyroYaw;
 
-    //calculateHeading();
-    // gyroLastADC can maybe replaced with Zero, but will leave as is for now
-    // this provides a small guard band for the gyro on Yaw before it increments or decrements the rawHeading
+    gyroData[XAXIS] = filterSmooth((float)gyroADC[XAXIS] * gyroScaleFactor, gyroData[XAXIS], smoothFactor);
+    gyroData[YAXIS] = filterSmooth((float)gyroADC[YAXIS] * gyroScaleFactor, gyroData[YAXIS], smoothFactor);
+    gyroData[ZAXIS] = filterSmooth((float)gyroADC[ZAXIS] * gyroScaleFactor, gyroData[ZAXIS], smoothFactor);
+
+
     long int currentGyroTime = micros();
     if (gyroData[YAW] > radians(1.0) || gyroData[YAW] < radians(-1.0)) {
       rawHeading += gyroData[YAW] * ((currentGyroTime - previousGyroTime) / 1000000.0);
@@ -354,11 +350,22 @@ public:
     int findZero[FINDZERO];
     for (byte calAxis = ROLL; calAxis < LASTAXIS; calAxis++) {
       for (int i=0; i<FINDZERO; i++) {
-        sendByteI2C(gyroAddress, (calAxis * 2) + 0x1D);
-        findZero[i] = readWordI2C(gyroAddress);
+        findZero[i] = xplaneGyro(calAxis);
         delay(10);
       }
       gyroZero[calAxis] = findMedian(findZero, FINDZERO);
+    }
+  }
+
+  int xplaneGyro(int axis){
+    switch(axis){
+        case XAXIS:
+            return fakeGyroRoll;
+        case YAXIS:
+            return fakeGyroPitch;
+        case ZAXIS:
+            return fakeGyroYaw;
+
     }
   }
 };

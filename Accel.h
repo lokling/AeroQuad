@@ -336,7 +336,7 @@ public:
 
 
       for (int i=0; i<FINDZERO; i++) {
-        findZero[i] = xplaneAccel[calAxis];
+        findZero[i] = xplaneAccel(calAxis);
         delay(10);
       }
       accelZero[calAxis] = findMedian(findZero, FINDZERO);
@@ -353,7 +353,21 @@ public:
     writeFloat(accelZero[YAXIS], LEVELROLLCAL_ADR);
     writeFloat(accelZero[ZAXIS], LEVELZCAL_ADR);
   }
+
+  int xplaneAccel(int axis){
+    switch(axis){
+        case XAXIS:
+            return fakeAccelRoll;
+        case YAXIS:
+            return fakeAccelPitch;
+        case ZAXIS:
+            return fakeAccelYaw;
+
+    }
+  }
 };
+
+
 
 #endif
 
