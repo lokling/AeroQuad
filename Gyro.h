@@ -312,6 +312,8 @@ public:
 
   void measure(void) {
 
+    readFakeValues();
+
     gyroADC[XAXIS] = fakeGyroRoll - gyroZero[XAXIS];
     gyroADC[YAXIS] =  gyroZero[YAXIS] - fakeGyroPitch;
     gyroADC[ZAXIS] =  gyroZero[ZAXIS] - fakeGyroYaw;
@@ -368,6 +370,121 @@ public:
 
     }
   }
+
+
+  //TODO move to separate class
+   void readFakeValues(){
+      readLine();
+
+
+      /*Serial.print("fakeGyroRoll=");
+      Serial.println(fakeGyroRoll);
+      Serial.print("fakeGyroPitch=");
+      Serial.println(fakeGyroPitch);
+      Serial.print("fakeGyroYaw=");
+      Serial.println(fakeGyroYaw);
+
+      Serial.print("fakeAccelRoll=");
+      Serial.println(fakeAccelRoll);
+      Serial.print("fakeAccelPitch=");
+      Serial.println(fakeAccelPitch);
+      */
+
+
+    }
+
+
+   String line;
+   void readLine(){
+       while( Serial2.available()>0){
+
+           //Serial.println("Starting readline");
+           byte c;
+
+           while( Serial2.available()>0 && (c = Serial2.read())!= 13  ) {  // buffer up a line
+             //Serial.print(c);//Debug echo
+             line+= c;
+           }
+
+           if (c==13){
+
+              //Serial.println("Parsing command:");
+              //Serial.println(line);
+              //Serial.println("------");
+
+                         // TODO check that
+              if (line.startsWith("gx=")){
+                fakeGyroRoll=toFloat(line.substring(3));
+                //Serial.print("fakeGyroRoll=");
+                //Serial.println(fakeGyroRoll);
+
+              } else if (line.startsWith("gy=")){
+                fakeGyroPitch=toFloat(line.substring(3));
+                //Serial.print("fakeGyroPitch=");
+                //Serial.println(fakeGyroPitch);
+              } else if (line.startsWith("gz=")){
+                fakeGyroYaw=toFloat(line.substring(3));
+                //Serial.print("fakeGyroYaw=");
+                //Serial.println(fakeGyroYaw);
+              }
+
+              else if (line.startsWith("ax=")){
+                fakeAccelRoll=toFloat(line.substring(3));
+                //Serial.print("fakeAccelRoll=");
+                //Serial.println(fakeAccelRoll);
+              } else if (line.startsWith("ay=")){
+                fakeAccelPitch=toFloat(line.substring(3));
+                //Serial.print("fakeAccelPitch=");
+                //Serial.println(fakeAccelPitch);
+              } else if (line.startsWith("az=")){
+                fakeAccelYaw=toFloat(line.substring(3));
+                //Serial.print("fakeAccelYaw=");
+                //Serial.println(fakeAccelYaw);
+              }
+
+
+
+              line ="";
+              c=0;
+           }
+       }
+   }
+
+
+   float toFloat(String floatString){
+
+      char buffer[floatString.length() + 1];
+      floatString.toCharArray(buffer, sizeof(buffer));
+      return atof(buffer) * 1 ; // TODO the scale-up should probably go elsewhere
+
+   }
+
+    int readInt(){
+      return word(blockingRead(),blockingRead());
+    }
+
+
+    int blockingRead(){
+          int read=-1;
+
+           long starttime = millis();
+           while(read==-1 && (millis()-starttime)<100){
+              read = Serial2.read();
+           }
+
+           return read;
+      }
+
+      bool syncToHeader()  {
+          while (Serial2.available()>0){
+              if (blockingRead()=='a' && blockingRead()=='b' && blockingRead()=='c' ) return true;
+          }
+
+          return false;
+      }
+
+
+
 };
 #endif
 
