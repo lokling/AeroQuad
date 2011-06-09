@@ -351,17 +351,17 @@ private:
   }
 
   void write(void) {
-    fake_analogWrite(FRONTMOTORPIN, (motorCommand[FRONT] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(REARMOTORPIN, (motorCommand[REAR] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(RIGHTMOTORPIN, (motorCommand[RIGHT] * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(LEFTMOTORPIN, (motorCommand[LEFT] * mMotorCommand) + bMotorCommand);
+    fake_analogWrite(FRONTMOTORPIN, motorCommand[FRONT] /8);
+    fake_analogWrite(REARMOTORPIN, motorCommand[REAR] /8);
+    fake_analogWrite(RIGHTMOTORPIN, motorCommand[RIGHT] /8);
+    fake_analogWrite(LEFTMOTORPIN, motorCommand[LEFT] /8);
   }
 
   void commandAllMotors(int _motorCommand) {   // Sends commands to all motors
-    fake_analogWrite(FRONTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(REARMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(RIGHTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
-    fake_analogWrite(LEFTMOTORPIN, (_motorCommand * mMotorCommand) + bMotorCommand);
+    fake_analogWrite(FRONTMOTORPIN, _motorCommand /8);
+    fake_analogWrite(REARMOTORPIN, _motorCommand /8);
+    fake_analogWrite(RIGHTMOTORPIN, _motorCommand /8);
+    fake_analogWrite(LEFTMOTORPIN, _motorCommand /8);
   }
 
   void fake_analogWrite(int pin, int value){
