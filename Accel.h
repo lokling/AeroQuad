@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4 - April 2011
+  AeroQuad v2.4.2 - June 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -140,7 +140,7 @@ public:
   
   void measure(void) {
     accelADC[XAXIS] = analogRead(accelChannel[PITCH]) - accelZero[PITCH];
-    accelADC[YAXIS] = analogRead(accelChannel[ROLL]) - accelZero[ROLL];
+    accelADC[YAXIS] = accelZero[ROLL] - analogRead(accelChannel[ROLL]);
     accelADC[ZAXIS] = accelZero[ZAXIS] - analogRead(accelChannel[ZAXIS]);
     for (byte axis = XAXIS; axis < LASTAXIS; axis++) {
       //accelData[axis] = computeFirstOrder(accelADC[axis] * accelScaleFactor, &firstOrder[axis]);
@@ -464,6 +464,12 @@ public:
   void measure(void) {
     // Actual measurement performed in gyro class
     // We just update the appropriate variables here
+
+    // Original Wii sensor orientation
+    //accelADC[XAXIS] =  NWMP_acc[PITCH] - accelZero[PITCH];
+    //accelADC[YAXIS] = NWMP_acc[ROLL] - accelZero[ROLL];
+    //accelADC[ZAXIS] = accelZero[ZAXIS] - NWMP_acc[ZAXIS];
+
     accelADC[XAXIS] =  NWMP_acc[XAXIS] - accelZero[XAXIS];  // Configured for Paris MultiWii Board
     accelADC[YAXIS] =  accelZero[YAXIS] - NWMP_acc[YAXIS];  // Configured for Paris MultiWii Board
     accelADC[ZAXIS] =  accelZero[ZAXIS] - NWMP_acc[ZAXIS];  // Configured for Paris MultiWii Board

@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4 - April 2011
+  AeroQuad v2.4.2 - June 2011
   www.AeroQuad.com 
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -85,6 +85,9 @@
 // *******************************************************************************************************************************
 //#define CameraControl
 
+// On screen display implementation using MAX7456 chip. See OSD.h for more info and configuration.
+//#define MAX7456_OSD
+
 /****************************************************************************
  ********************* End of User Definition Section ***********************
  ****************************************************************************/
@@ -94,6 +97,9 @@
 #endif
 #if defined(HeadingMagHold) && defined(FlightAngleMARG) && defined(FlightAngleARG)
 #undef FlightAngleARG
+#endif
+#if defined(MAX7456_OSD) && !defined(AeroQuadMega_v2) && !defined(AeroQuadMega_Wii) && !defined(AeroQuadMega_CHR6DM)
+#undef MAX7456_OSD
 #endif
 
 #include <EEPROM.h>
@@ -260,6 +266,10 @@
     #include "Camera.h"
     Camera_AeroQuad camera;
   #endif
+  #ifdef MAX7456_OSD
+    #include "OSD.h"
+    OSD osd;
+  #endif
 #endif
 
 #ifdef ArduCopter
@@ -353,6 +363,10 @@
     #include "Camera.h"
     Camera_AeroQuad camera;
   #endif
+  #ifdef MAX7456_OSD
+    #include "OSD.h"
+    OSD osd;
+  #endif
 #endif
 
 #ifdef AeroQuadMega_CHR6DM
@@ -376,6 +390,10 @@
   #ifdef CameraControl
     #include "Camera.h"
     Camera_AeroQuad camera;
+  #endif
+  #ifdef MAX7456_OSD
+    #include "OSD.h"
+    OSD osd;
   #endif
 #endif
 
@@ -417,7 +435,7 @@
 // ********************** Setup AeroQuad **********************
 // ************************************************************
 void setup() {
-  Serial.begin(BAUD);
+  SERIAL_BEGIN(BAUD);
   pinMode(LEDPIN, OUTPUT);
   digitalWrite(LEDPIN, LOW);
 
@@ -529,6 +547,11 @@ void setup() {
     camera.setCenterRoll(1500); // Need to figure out nice way to set center position
     camera.setmCameraPitch(11.11);
     camera.setCenterPitch(1300);
+  #endif
+  
+  //initialising OSD
+  #if defined(MAX7456_OSD)
+    osd.initialize();
   #endif
 
   #if defined(BinaryWrite) || defined(BinaryWritePID)
@@ -694,6 +717,12 @@ void loop () {
         readPilotCommands(); // defined in FlightCommand.pde
       }
 
+      if (sensorLoop == ON) {
+        #ifdef AltitudeHold
+          altitude.measure(); // defined in altitude.h
+        #endif
+      }
+
       #if defined(CameraControl)
         camera.setPitch(degrees(flightAngle->getData(PITCH)));
         camera.setRoll(degrees(flightAngle->getData(ROLL)));
@@ -717,12 +746,6 @@ void loop () {
       G_Dt = (currentTime - twentyFiveHZpreviousTime) / 1000000.0;
       twentyFiveHZpreviousTime = currentTime;
       
-      if (sensorLoop == ON) {
-        #if defined(AltitudeHold)
-          altitude.measure(); // defined in altitude.h
-        #endif
-      }
-      
       #ifdef DEBUG_LOOP
         digitalWrite(9, LOW);
       #endif
@@ -740,12 +763,13 @@ void loop () {
       tenHZpreviousTime = currentTime;
 
       if (sensorLoop == ON) {
-        #if defined(HeadingMagHold)
+        #ifdef HeadingMagHold
           compass.measure(flightAngle->getData(ROLL), flightAngle->getData(PITCH)); // defined in compass.h
         #endif
-        #if defined(BattMonitor)
+        #ifdef BattMonitor
           batteryMonitor.measure(armed);
         #endif
+        processAltitudeHold();
       }
       // Listen for configuration commands and reports telemetry
       if (telemetryLoop == ON) {
@@ -753,10 +777,14 @@ void loop () {
         sendSerialTelemetry(); // defined in SerialCom.pde
       }
       
+      #ifdef MAX7456_OSD
+        osd.update();
+      #endif
+
       #ifdef DEBUG_LOOP
         digitalWrite(8, LOW);
-      #endif
-    }
+      #endif      
+	}
 
     previousTime = currentTime;
   }
