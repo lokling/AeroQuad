@@ -1,7 +1,20 @@
-AeroQuad Flight Software Source Code 2.4.2
+AeroQuad Flight Software Source Code 2.5 Beta 1
 ========================================
 [http://www.aeroquad.com](http://www.aeroquad.com)
 
+Version 2.5 Beta 1 Release Notes (7/31/2011)
+----------------------------------------
+ * Fixed various 8 channel transmitter channel bugs (special thanks to Ala42!)
+ * Added safety procedure for ESC calibration (prevent random full throttles during PID updates)
+   * Please keep common sense safety practices in place, remove props or remove battery power when necessary
+ * Optmized SerialCom.pde (removed unused commands)
+ 
+Version 2.4.3 Release Notes (7/24/2011)
+----------------------------------------
+ * Fixed duplicate altitude hold call in timing executive
+ * Added support for 8 channel receiver for Mega (thanks Moeffe)
+ * Added telemetry response to tell Configurator how many receiver channels and motor commands are available
+ 
 Version 2.4.2 Release Notes (6/29/2011)
 ----------------------------------------
  * Fixed EEPROM issue that affects altitude hold (thanks Aadamson)
@@ -15,14 +28,14 @@ Version 2.4.1 Release Notes (6/5/2011)
  * Video On Screen Display support (thanks Alamo)
  * CHR6DM compilation bug fixes (thanks lokling)
 
- Version 2.4 Release Notes (4/2/2011)
+Version 2.4 Release Notes (4/2/2011)
 ----------------------------------------
  * Added ARG/MARG flight angle estimation routines
  * Improved timing executive, reduced main flight loop to 100Hz
  * Stable/Attitude Mode has highly improved auto level capability
  * All these changes have been made by jihlein and aadamson, THANKS!
  
-   Version 2.3 Release Notes (3/17/2011)
+Version 2.3 Release Notes (3/17/2011)
 ----------------------------------------
  * Implemented common SI units for sensors
  * Implemented common DCM gains for all hardware platforms

@@ -1,5 +1,5 @@
 /*
-  AeroQuad v2.4.2 - June 2011
+  AeroQuad v2.5 Beta 1 - July 2011
   www.AeroQuad.com
   Copyright (c) 2011 Ted Carancho.  All rights reserved.
   An Open Source Arduino based multicopter.
@@ -59,42 +59,29 @@ public:
 
   void _initialize(void) {
     xmitFactor = readFloat(XMITFACTOR_ADR);
-    
-    mTransmitter[0] = readFloat(RECEIVER_CHANNEL_0_SLOPE_ADR);
-    bTransmitter[0] = readFloat(RECEIVER_CHANNEL_0_OFFSET_ADR);
-    transmitterSmooth[0] = readFloat(RECEIVER_CHANNEL_0_SMOOTH_FACTOR_ADR);
-    mTransmitter[1] = readFloat(RECEIVER_CHANNEL_1_SLOPE_ADR);
-    bTransmitter[1] = readFloat(RECEIVER_CHANNEL_1_OFFSET_ADR);
-    transmitterSmooth[1] = readFloat(RECEIVER_CHANNEL_1_SMOOTH_FACTOR_ADR);
-    mTransmitter[2] = readFloat(RECEIVER_CHANNEL_2_SLOPE_ADR);
-    bTransmitter[2] = readFloat(RECEIVER_CHANNEL_2_OFFSET_ADR);
-    transmitterSmooth[2] = readFloat(RECEIVER_CHANNEL_2_SMOOTH_FACTOR_ADR);
-    mTransmitter[3] = readFloat(RECEIVER_CHANNEL_3_SLOPE_ADR);
-    bTransmitter[3] = readFloat(RECEIVER_CHANNEL_3_OFFSET_ADR);
-    transmitterSmooth[3] = readFloat(RECEIVER_CHANNEL_3_SMOOTH_FACTOR_ADR);
-    mTransmitter[4] = readFloat(RECEIVER_CHANNEL_4_SLOPE_ADR);
-    bTransmitter[4] = readFloat(RECEIVER_CHANNEL_4_OFFSET_ADR);
-    transmitterSmooth[4] = readFloat(RECEIVER_CHANNEL_4_SMOOTH_FACTOR_ADR);
-    mTransmitter[5] = readFloat(RECEIVER_CHANNEL_5_SLOPE_ADR);
-    bTransmitter[5] = readFloat(RECEIVER_CHANNEL_5_OFFSET_ADR);
-    transmitterSmooth[5] = readFloat(RECEIVER_CHANNEL_5_SMOOTH_FACTOR_ADR);
+
+    for(byte channel = ROLL; channel < LASTCHANNEL; channel++) {
+      mTransmitter[channel] = readFloat(RECEIVER_DATA[channel].slope);
+      bTransmitter[channel] = readFloat(RECEIVER_DATA[channel].offset);
+      transmitterSmooth[channel] = readFloat(RECEIVER_DATA[channel].smooth_factor);
+    }
   }
 
   // returns non-smoothed non-scaled ADC data in PWM full range 1000-2000 values
   const int getRaw(byte channel) {
     return receiverData[channel];
   }
-  
+
   // returns raw but smoothed receiver(channel) in PWM
   const int getRawSmoothed(byte channel) {
     return transmitterCommandSmooth[channel];
   }
- 
+
    // returns smoothed & scaled receiver(channel) in PWM values, zero centered
   const int getData(byte channel) {
     return transmitterCommand[channel];
   }
-  
+
   // return the smoothed & scaled number of radians/sec in stick movement - zero centered
   const float getSIData(byte channel) {
     // 2.3 Original
@@ -377,7 +364,7 @@ SIGNAL(PCINT2_vect) {
   static byte receiverPin[6] = {5, 3, 2, 4, 1, 0}; // bit number of PORTK used for ROLL, PITCH, YAW, THROTTLE, MODE, AUX
 #else
  //arduino pins 63, 64, 65, 62, 66, 67
-  static byte receiverPin[6] = {1, 2, 3, 0, 4, 5}; // bit number of PORTK used for ROLL, PITCH, YAW, THROTTLE, MODE, AUX
+  static byte receiverPin[8] = {1, 2, 3, 0, 4, 5, 6, 7}; // bit number of PORTK used for ROLL, PITCH, YAW, THROTTLE, MODE, AUX
 #endif
 
 class Receiver_AeroQuadMega : public Receiver {
@@ -386,7 +373,7 @@ public:
     this->_initialize(); // load in calibration xmitFactor from EEPROM
     DDRK = 0;
     PORTK = 0;
-    PCMSK2 |= 0x3F;
+    PCMSK2 |= 0xFF;
     PCICR |= 0x1 << 2;
 
   for (byte channel = ROLL; channel < LASTCHANNEL; channel++)
